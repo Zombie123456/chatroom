@@ -1,0 +1,8 @@
+SECRET_KEY=s0erwb^!77!)4*jtx1_(3qn#=bg)ou0genh-bllx_-!ue(0w#4
+POSTGRES_USER=coati
+POSTGRES_PASSWORD=coati
+POSTGRES_DB=coati
+POSTGRES_PORT=5432
+POSTGRES_SERVICE=coati-db
+C_FORCE_ROOT=True
+DOCKERIZED=true

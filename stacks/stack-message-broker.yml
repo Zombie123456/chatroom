@@ -1,0 +1,30 @@
+version: '3.4'
+services:
+  rabbitmq:
+    restart: always
+    image: rabbitmq:3.6.11-management-alpine
+    ports:
+      - 15672:15672
+    env_file:
+      - ../env/.rabbitmq
+    networks:
+      - coati_data
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
+  flower:
+    restart: always
+    image: deanunnotech/flower:latest
+    ports:
+      - 5555:5555
+    env_file:
+      - ../env/.rabbitmq
+    networks:
+      - coati_data
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
+networks:
+  coati_data:

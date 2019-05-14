@@ -1,0 +1,4 @@
+RABBITMQ_DEFAULT_USER=coati
+RABBITMQ_DEFAULT_PASS=coati
+RABBITMQ_DEFAULT_VHOST=coati
+BROKER_URL=amqp://coati:coati@rabbitmq:5672/coati

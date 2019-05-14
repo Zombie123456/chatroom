@@ -1,0 +1,42 @@
+version: '3.4'
+services:
+  nginx:
+    image: unnotech/http-proxy:production
+    networks:
+      - reverse_proxy
+    volumes:
+      - logs:/var/log/nginx
+      - cache:/etc/nginx/cache
+    env_file:
+      - ../env/.env
+    configs:
+      - source: nginx_default_conf
+        target: /etc/nginx/conf.d/default.conf
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 1
+        failure_action: rollback
+      restart_policy:
+        condition: on-failure
+      placement:
+        constraints:
+          - node.role == manager
+    ports:
+      - target: 8002
+        published: 8002
+        mode: host
+      - target: 8003
+        published: 8003
+        mode: host
+
+networks:
+  reverse_proxy:
+
+configs:
+  nginx_default_conf:
+    file: ../configs/nginx/default.conf
+
+volumes:
+  logs:
+  cache:

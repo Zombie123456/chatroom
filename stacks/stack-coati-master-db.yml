@@ -1,0 +1,35 @@
+version: '3.4'
+services:
+  coati-db:
+    image: postgres:9.6
+    networks:
+      - coati_data
+    env_file:
+      - ../env/.env
+      - ../env/.coati
+    volumes:
+      - postgres-data-coati:/var/lib/postgresql/data
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+
+  redis:
+    image: redis:latest
+    networks:
+      - coati_data
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+    volumes:
+      - redis-data-coati:/data
+
+networks:
+  coati_data:
+
+volumes:
+  postgres-data-coati:
+  redis-data-coati:

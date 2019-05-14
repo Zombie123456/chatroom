@@ -1,0 +1,96 @@
+version: '3.4'
+services:
+  coati-backend:
+    image: unnotechchatroom/kaiser-coati:latest
+    entrypoint: /usr/src/app/entrypoint.sh
+    env_file:
+      - ../env/.env
+      - ../env/.rabbitmq
+      - ../env/.coati
+    configs:
+      - source: coati-entrypoint
+        target: /usr/src/app/entrypoint.sh
+        mode: 0500
+      - source: coati_gunicorn
+        target: /usr/src/app/gunicorn_conf.py
+    networks:
+      - coati_data
+      - reverse_proxy
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 1
+        failure_action: rollback
+        delay: 3s
+        order: start-first
+      restart_policy:
+        condition: on-failure
+      placement:
+        constraints:
+          - node.role == manager
+
+  coati-celery:
+    image: unnotechchatroom/kaiser-coati:latest
+    entrypoint: /usr/src/app/entrypoint.sh
+    env_file:
+      - ../env/.env
+      - ../env/.rabbitmq
+      - ../env/.coati
+    configs:
+      - source: coati-celery-entrypoint
+        target: /usr/src/app/entrypoint.sh
+        mode: 0500
+    networks:
+      - coati_data
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 1
+        failure_action: rollback
+        delay: 3s
+        order: start-first
+      restart_policy:
+        condition: on-failure
+      placement:
+        constraints:
+          - node.role == manager
+
+  coati-celery-beat:
+    image: unnotechchatroom/kaiser-coati:latest
+    entrypoint: /usr/src/app/entrypoint.sh
+    env_file:
+      - ../env/.env
+      - ../env/.rabbitmq
+      - ../env/.coati
+    configs:
+      - source: coati-celery-beat-entrypoint
+        target: /usr/src/app/entrypoint.sh
+        mode: 0500
+    networks:
+      - coati_data
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 1
+        failure_action: rollback
+        delay: 3s
+        order: start-first
+      restart_policy:
+        condition: on-failure
+      placement:
+        constraints:
+          - node.role == manager
+
+configs:
+  coati-celery-entrypoint:
+    file: ../configs/coati/celery-entrypoint.sh
+  coati-celery-beat-entrypoint:
+    file: ../configs/coati/celery-beat-entrypoint.sh
+  coati-entrypoint:
+    file: ../configs/coati/entrypoint.sh
+  coati_gunicorn:
+    file: ../configs/coati/gunicorn_conf.py
+
+networks:
+  coati_data:
+  reverse_proxy:
