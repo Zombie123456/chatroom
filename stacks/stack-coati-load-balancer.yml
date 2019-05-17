@@ -7,11 +7,20 @@ services:
     volumes:
       - logs:/var/log/nginx
       - cache:/etc/nginx/cache
+      - frontend:/usr/src/app
     env_file:
       - ../env/.env
     configs:
       - source: nginx_default_conf
         target: /etc/nginx/conf.d/default.conf
+      - source: member_conf
+        target: /etc/nginx/conf.d/member.conf
+      - source: chamois_conf
+        target: /etc/nginx/conf.d/chamois.conf
+      - source: catfish_conf
+        target: /etc/nginx/conf.d/catfish.conf
+      - source: members_proxy_conf
+        target: /etc/nginx/conf.d/members_proxy.conf
     deploy:
       replicas: 1
       update_config:
@@ -29,6 +38,12 @@ services:
       - target: 8003
         published: 8003
         mode: host
+      - target: 80
+        published: 80
+        mode: host
+      - target: 8888
+        published: 8888
+        mode: host
 
 networks:
   reverse_proxy:
@@ -36,7 +51,16 @@ networks:
 configs:
   nginx_default_conf:
     file: ../configs/nginx/default.conf
+  member_conf:
+    file: ../configs/nginx/members.conf
+  chamois_conf:
+    file: ../configs/nginx/chamois.conf
+  catfish_conf:
+    file: ../configs/nginx/catfish.conf
+  members_proxy_conf:
+    file: ../configs/nginx/members_proxy.conf
 
 volumes:
   logs:
   cache:
+  frontend:
